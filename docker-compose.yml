@@ -1,0 +1,25 @@
+---
+version: "3.7"
+
+services:
+    ocis:
+        image: owncloud/ocis:latest
+        entrypoint:
+            - /bin/sh
+        command: [ "-c", "ocis init || true; ocis server" ]
+        environment:
+            OCIS_INSECURE: true
+            OCIS_LOG_LEVEL: error
+            OCIS_URL: https://host.docker.internal:9200
+            OCIS_ADD_RUN_SERVICES: policies
+            OCIS_ASYNC_UPLOADS: true
+            PROXY_POLICIES_QUERY: data.proxy.granted
+            POLICIES_POSTPROCESSING_QUERY: data.postprocessing.granted
+            POSTPROCESSING_STEPS: policies
+            IDM_CREATE_DEMO_USERS: true
+            IDM_ADMIN_PASSWORD: admin
+        volumes:
+            - ./ocis_config.yaml:/etc/ocis/ocis.yaml
+            - ./policies:/var/lib/ocis/postprocessing/policies
+        ports:
+            - "9200:9200"
